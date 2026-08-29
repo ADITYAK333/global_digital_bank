@@ -18,7 +18,11 @@ public class AccountEnhance {
         this.accountNumber = accountNumber;
         this.name = name;
         this.age = age >minage ? age : minage;
-        this.accountType = accountType.equals("Savings") || accountType.equals("Current") ? accountType : "Saving";
+        if (accountType.equals("Savings") || accountType.equals("Current")) {
+            this.accountType = accountType;
+        } else {
+            this.accountType = "Savings";
+        }
         if(accountType.equals("Savings") && initialBalance <min_balance_saving){
             this.balance= 500;         }
         else if(accountType.equals("Currrent") && initialBalance <min_balance_current){
@@ -27,78 +31,74 @@ public class AccountEnhance {
         this.pin = pin;
     
     }
-
+    
     public boolean deposit(double amount) {
+        if (status.equals("Inactive")) {
+            return false;    }
         if (amount > 0) {
             balance = balance + amount;
+            return true;    }
+        return false;    }
+
+ public boolean withdraw(double amount, int pin) {
+        if (status.equals("Inactive")) {
+            return false;    }
+        if (!verifyPin(pin)) {
+            return false;    }
+        
+        if (accountType.equals("Savings") && (balance - amount) > min_balance_saving) {
+            balance = balance - amount;
+            return true;
+        } else if (accountType.equals("Current") && (balance - amount) > min_balance_current) {
+            balance = balance - amount;
             return true;
         }
-        return false;
-    }
-
-    public boolean withdraw(double amount, Integer pin) {
-        if (this.pin ==pin){
-            if ( !status.equals("Inactive")){
-                if (amount > 0 && balance >= amount) {
-                    balance = balance - amount;
-                    return true; }
-                return false;}
-    }
-        return false;
-    }
-
+        return false;    }
+    
     public int getAccountNumber() {
-        return accountNumber;
-    }
+        return accountNumber;    }
 
     public String getName() {
-        return name;
-    }
+        return name;    }
 
     public int getAge() {
-        return age;
-    }
+        return age;    }
 
     public double getBalance() {
-        return balance;
-    }
+        return balance;    }
 
     public String getAccountType() {
-        return accountType;
-    }
+        return accountType;    }
 
     public String getStatus() {
         return status;
     }
-    public boolean setpin(Integer pin){
-        this.pin = pin;
-        return true;
-    }
+public boolean setPin(int pin) {
+        if (pin >= minpin && pin <= maxpin) {
+            this.pin = pin;
+            return true;        }
+        return false;    }
 
     public void setName(String name) {
-        this.name = name;
-    }
+        this.name = name;    }
 
     public void setAge(int age) {
         this.age = age;
     }
-    public boolean verifyPin(Integer pin){
-        if (this.pin == pin){
-            return true;
-        }
-        else{ return false;}
-    }
+    public boolean verifyPin(int pin) {
+        if (this.pin != null && this.pin == pin) {
+            return true;        }
+        return false;     }
+    
     public boolean closeAccount(){
         this.status ="Inactive";
-        return false;
-    }
+        return false;    }
+    
     public boolean openAccount(){
         this.status ="Active";
-        return true;
-    }
+        return true;    }
+    
     public boolean haspin(){
         if(this.pin!=null ){return true;}
-        return false;
-    }
-}
+        return false;    }    }
 
