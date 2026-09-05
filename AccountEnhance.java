@@ -13,26 +13,28 @@ public class AccountEnhance {
     public static final double min_balance_current = 1000.0;
     public static final double min_balance_saving = 500.0;
 
-    public AccountEnhance(int accountNumber, String name, int age, double initialBalance, String accountType) throws IllegalArgumentException {
-        if (age < minage) {
-            throw new IllegalArgumentException("Customer must be at least 18 years old. Provided: " + age);
-        }
-        if (!accountType.equals("Savings") && !accountType.equals("Current")) {
-            throw new IllegalArgumentException("Account type must be 'Savings' or 'Current'. Provided: " + accountType);
-        }
-        
-        double minRequired = accountType.equals("Savings") ? min_balance_saving : min_balance_current;
-        if (initialBalance < minRequired) {
-            throw new IllegalArgumentException(accountType + " account requires minimum balance of \u20B9" + minRequired + ". Provided: " + initialBalance);
-        }
-        
-        this.accountNumber = accountNumber;
-        this.name = name;
-        this.age = age;
-        this.balance = initialBalance;
-        this.accountType = accountType;
+public AccountEnhance(int accountNumber, String name, int age, double initialBalance, String accountType) throws IllegalArgumentException {
+    // 1. Minimum age check
+    if (age < minage) {
+        throw new IllegalArgumentException("Customer must be at least 18 years old. Provided: " + age);
     }
-
+    if (accountType == null || accountType.trim().isEmpty()) {
+        throw new IllegalArgumentException("Account type cannot be null or empty.");
+    }
+    double minRequired = 0.0;
+    if (accountType.equalsIgnoreCase("Savings")) {
+        minRequired = min_balance_saving; 
+    } else if (accountType.equalsIgnoreCase("Current")) {
+        minRequired = min_balance_current;  }
+    if (initialBalance < minRequired) {
+        throw new IllegalArgumentException(accountType + " account requires a minimum balance of " + minRequired + ". Provided: " + initialBalance);
+    }
+    this.accountNumber = accountNumber;
+    this.name = name;
+    this.age = age;
+    this.balance = initialBalance;
+    this.accountType = accountType;
+}
     private void validateActive() throws InactiveAccountException {
         if (status.equals("Inactive")) {
             throw new InactiveAccountException("Account is inactive. Please reopen the account or contact support.");
@@ -59,36 +61,30 @@ public class AccountEnhance {
             throw new InvalidAmountException("Withdraw amount must be positive");
         }
         if (amount > balance) {
-            throw new InsufficientBalanceException("Insufficient balance. Available: \u20B9" + balance + ", Requested: " + amount);
+            throw new InsufficientBalanceException("Insufficient balance. Available: " + balance + ", Requested: " + amount);
         }
         
         double minRequired = accountType.equals("Savings") ? min_balance_saving : min_balance_current;
         if ((balance - amount) < minRequired) {
-            throw new MinimumBalanceViolationException("Cannot withdraw. Minimum balance of \u20B9" + minRequired + " required. Available after withdrawal: \u20B9" + (balance - amount));
+            throw new MinimumBalanceViolationException("Cannot withdraw. Minimum balance of " + minRequired + " required. Available after withdrawal: \u20B9" + (balance - amount));
         }
         balance = balance - amount;
     }
 
     public void closeAccount() throws IllegalStateException {
         if (status.equals("Inactive")) {
-            throw new IllegalStateException("Account is already closed");
-        }
-        this.status = "Inactive";
-    }
+            throw new IllegalStateException("Account is already closed");        }
+        this.status = "Inactive";    }
 
     public void reopenAccount() throws IllegalStateException {
         if (status.equals("Active")) {
-            throw new IllegalStateException("Account is already active");
-        }
-        this.status = "Active";
-    }
+            throw new IllegalStateException("Account is already active");        }
+        this.status = "Active";    }
 
     public void setPin(int pin) throws IllegalArgumentException {
         if (pin < minpin || pin > maxpin) {
-            throw new IllegalArgumentException("Invalid PIN");
-        }
-        this.pin = pin;
-    }
+            throw new IllegalArgumentException("Invalid PIN");        }
+        this.pin = pin;    }
 
     public boolean verifyPin(int pin) {
         if (this.pin != null && this.pin == pin) {
